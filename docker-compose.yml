@@ -1,0 +1,36 @@
+version: '3.0'
+
+services:
+    nginx:
+        image: "nginx:latest"
+        container_name: nginx
+        ports:
+            - "8081:80"
+        volumes:
+            - ./app:/usr/share/nginx/html
+            - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - web
+    php-fpm:
+        build: ./php-fpm
+        container_name: php-fpm
+        volumes:
+            - ./app:/usr/share/nginx/html
+        networks:
+            - web
+    postgres:
+        image: "postgres:alpine"
+        container_name: postgres
+        environment:
+            - POSTGRES_DB=mydb
+            - POSTGRES_USER=pgsql
+            - POSTGRES_PASSWORD=pgsql
+        networks:
+            - web
+    redis:
+        image: "redis:4.0"
+        networks:
+            - web
+networks:
+    web:
+        driver: bridge
